@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    Insira a quantidade de placas solares <input type="text" id="ipt_qtd_placas"> <br>
+    Insira a temperatura media da região <input type="text" id="ipt_temp"> <br>
+    <button onclick="calculo()">Calcular</button> <br>
+    <div id="div_exibir"></div>
+
+</body>
+
+<script>
+
+    function calculo() {
+        let ax_placas = Number(ipt_qtd_placas.value);
+        let ax_temp = Number(ipt_temp.value);
+        let ax_porcet_graus = 0;
+
+
+        if (ax_temp <= 25) {
+            ax_porcet_graus = 0
+        } else {
+            ax_porcet_graus = (ax_temp - 25) * 0.35;
+        }
+
+        let ax_Moth_khw = 82.5;
+        let ax_porcent_total = (15 + ax_porcet_graus) / 100;
+        let ax_porcet_khw_moth = (ax_Moth_khw * ax_porcent_total);
+        let ax_sem_empresa = (ax_placas * (ax_Moth_khw - ax_porcet_khw_moth));
+        let ax_com_empresa = (ax_placas * ax_Moth_khw);
+        let ax_sem_dinheiro = (ax_sem_empresa * 0.79);
+        let ax_com_dinheiro = (ax_com_empresa * 0.79);
+        let ax_diferenca = (ax_com_dinheiro - ax_sem_dinheiro);
+
+
+        div_exibir.innerHTML += `Cliente sem o nosso produto vc foi prodoziu ${ax_sem_empresa.toFixed()} o que daria em valor monetario ${ax_sem_dinheiro.toFixed()} mas caso 
+            vc utilizasse nosso produto teria uma produção de ${ax_com_empresa.toFixed()} no valor monetario seria ${ax_com_dinheiro.toFixed()} o valor que teria economizado seria ${ax_diferenca.toFixed()}`
+    }
+
+</script>
+
+</html>
