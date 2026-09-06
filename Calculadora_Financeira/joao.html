@@ -14,7 +14,7 @@
 
     Insira seu nome <input type="text" id="ipt_nome" class="campo"> <br>
     Insira a quantidade de placas solares <input type="text" id="ipt_qtd_placas" class="campo"> <br>
-    Selecione a região <select id="sel_regiao" class="campo">
+    Selecione a região <select id="ipt_regiao" class="campo">
         <option value="19">Sul (média 19°C)</option>
         <option value="21">Sudeste (média 21°C)</option>
         <option value="24">Centro-Oeste (média 24°C)</option>
@@ -31,7 +31,7 @@
     function calculo() {
         let ax_nome = ipt_nome.value;
         let ax_placas = Number(ipt_qtd_placas.value);
-        let ax_temp = Number(sel_regiao.value);
+        let ax_temp = Number(ipt_regiao.value);
         let ax_porcet_graus = 0;
 
         if (ax_nome.length == 0) {
