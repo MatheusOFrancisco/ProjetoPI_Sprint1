@@ -12,8 +12,15 @@
 
     <h1>Simulador financeiro</h1>
 
+    Insira seu nome <input type="text" id="ipt_nome" class="campo"> <br>
     Insira a quantidade de placas solares <input type="text" id="ipt_qtd_placas" class="campo"> <br>
-    Insira a temperatura media da região <input type="text" id="ipt_temp" class="campo"> <br>
+    Selecione a região <select id="sel_regiao" class="campo">
+        <option value="19">Sul (média 19°C)</option>
+        <option value="21">Sudeste (média 21°C)</option>
+        <option value="24">Centro-Oeste (média 24°C)</option>
+        <option value="26">Norte (média 26°C)</option>
+        <option value="27">Nordeste (média 27°C)</option>
+    </select> <br>
     <button onclick="calculo()" class="botao">Calcular</button> <br>
     <div id="div_exibir" class="resultado"></div>
 
@@ -22,33 +29,46 @@
 <script>
 
     function calculo() {
+        let ax_nome = ipt_nome.value;
         let ax_placas = Number(ipt_qtd_placas.value);
-        let ax_temp = Number(ipt_temp.value);
+        let ax_temp = Number(sel_regiao.value);
         let ax_porcet_graus = 0;
 
+        if (ax_nome.length == 0) {
 
+            alert("Preencha seu nome.");
 
+        } else if (ipt_qtd_placas.value.length == 0) {
 
-        if (ax_temp <= 25) {
-            ax_porcet_graus = 0
+            alert("Preencha a quantidade de placas.");
+
+        } else if (ax_placas <= 0) {
+
+            alert("A quantidade de placas precisa ser maior que zero.");
+
         } else {
-            ax_porcet_graus = (ax_temp - 25) * 0.35;
+
+            if (ax_temp <= 25) {
+                ax_porcet_graus = 0
+            } else {
+                ax_porcet_graus = (ax_temp - 25) * 0.35;
+            }
+
+            let ax_Moth_khw = 82.5;
+            let ax_porcent_total = (15 + ax_porcet_graus) / 100;
+            let ax_porcet_khw_moth = (ax_Moth_khw * ax_porcent_total);
+            let ax_sem_empresa = (ax_placas * (ax_Moth_khw - ax_porcet_khw_moth));
+            let ax_com_empresa = (ax_placas * ax_Moth_khw);
+            let ax_sem_dinheiro = (ax_sem_empresa * 0.79);
+            let ax_com_dinheiro = (ax_com_empresa * 0.79);
+            let ax_diferenca = (ax_com_dinheiro - ax_sem_dinheiro);
+
+            div_exibir.innerHTML += `Olá, ${ax_nome}! <br>
+                Sem o nosso produto, você produziria ${ax_sem_empresa.toFixed()} kWh por mês, no valor de R$ ${ax_sem_dinheiro.toFixed(2)}. <br>
+                Com o nosso produto, a produção seria de ${ax_com_empresa.toFixed()} kWh por mês, no valor de R$ ${ax_com_dinheiro.toFixed(2)}. <br>
+                Ou seja, você economizaria R$ ${ax_diferenca.toFixed(2)} por mês! <br><br>`
+
         }
-
-        let ax_Moth_khw = 82.5;
-        let ax_porcent_total = (15 + ax_porcet_graus) / 100;
-        let ax_porcet_khw_moth = (ax_Moth_khw * ax_porcent_total);
-        let ax_sem_empresa = (ax_placas * (ax_Moth_khw - ax_porcet_khw_moth));
-        let ax_com_empresa = (ax_placas * ax_Moth_khw);
-        let ax_sem_dinheiro = (ax_sem_empresa * 0.79);
-        let ax_com_dinheiro = (ax_com_empresa * 0.79);
-        let ax_diferenca = (ax_com_dinheiro - ax_sem_dinheiro);
-
-
-        div_exibir.innerHTML += `Cliente sem o nosso produto vc foi prodoziu ${ax_sem_empresa.toFixed()} khw o que daria em valor monetario R$ ${ax_sem_dinheiro.toFixed(2)} mas caso 
-            vc utilizasse nosso produto teria uma produção de ${ax_com_empresa.toFixed()} khw no valor monetario seria R$ ${ax_com_dinheiro.toFixed(2)} o valor que teria economizado seria R$ ${ax_diferenca.toFixed(2)} <br><br>`
-
-
 
     }
 
