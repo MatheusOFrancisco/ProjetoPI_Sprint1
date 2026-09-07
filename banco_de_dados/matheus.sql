@@ -1,9 +1,6 @@
 CREATE DATABASE projeto_sprint1_ind;
 USE projeto_sprint1_ind;
 
-CREATE DATABASE cellara;
-USE cellara;
-
 CREATE TABLE empresa (
     idEmpresa INT PRIMARY KEY AUTO_INCREMENT,
     nome VARCHAR(100) NOT NULL,
