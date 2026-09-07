@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador financeiro</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        background-color: #f8f9fa;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .caixapai {
+        border-style: outset;
+        border-width: 5px;
+        border-color: #2B3B92;
+        border-radius: 40px;
+        padding: 5px;
+        margin-top: 50px;
+        margin-bottom: 50px;
+
+        min-width: 600px;
+        min-height: 400px;
+    }
+
+    .title {
+        margin-top: 40px;
+        margin-bottom: 20px;
+        margin-left: 20px;
+        font-size: 32px;
+        font-weight: bold;
+    }
+
+    .p1 {
+        margin: 20px;
+        font-size: 20px;
+    }
+
+    .campo_resposta {
+        align-self: center;
+        margin-top: 20px;
+        min-width: 590px;
+        min-height: 30px;
+
+        border-style: solid;
+        border-radius: 10px;
+        border-color: #2B3B92;
+    }
+
+    .campo_resposta_com_comentario {
+        align-self: center;
+        min-width: 590px;
+        min-height: 30px;
+
+        border-style: solid;
+        border-radius: 10px;
+        border-color: #2B3B92;
+    }
+
+    .comentario {
+        margin-top: 10px;
+        font-style: italic;
+        font-size: 10px;
+        color: gray;
+    }
+
+    .selecione {
+        font-size: 18px;
+
+        border-style: solid;
+        border-width: 2px;
+        border-color: #2B3B92;
+    }
+
+    .button {
+        font-size: 20px;
+
+        border-style: solid;
+        border-width: 2px;
+        border-color: #2B3B92;
+
+        background-color: #2B3B92;
+        color: #f8f9fa;
+    }
+
+    .campo_resultado {
+        background-color: white;
+        border: solid 2px #2B3B92;
+        border-radius: 10px;
+        margin-top: 20px;
+        padding: 15px;
+        font-size: 15px;
+    }
+</style>
+
+<body>
+    <div id="caixapai" class="caixapai">
+        <div class="title">Simulador Financeiro</div>
+        <div class="p1">Insira a quantidade de paineis solares sua empresa possui: <br>
+            <input class="campo_resposta" type="text" id="ipt_qnt_painel">
+        </div>
+
+        <div class="p1">
+            Selecione a potencia dos paineis solares: <select class="selecione" id="slc_potencia">
+                <option value="opcao1">Selecione...</option>
+                <option value="opcao2">de 0W a 300W</option>
+                <option value="opcao3">de 301W a 500W</option>
+                <option value="opcao4">de 501W a 700W</option>
+            </select>
+        </div>
+
+        <div class="p1">A quanto tempo estão ativos?
+            <div class="comentario">Digite em meses a resposta* <br>
+                <input class="campo_resposta_com_comentario" type="text" id="ipt_tempo_ativo">
+            </div>
+        </div>
+
+        <div class="p1">
+            Possui um programa de limpeza nos paineis solares? <select class="selecione" id="slc_tem_limpeza">
+                <option value="opcao1">Selecione...</option>
+                <option value="opcao2">SIM</option>
+                <option value="opcao3">NÃO</option>
+            </select>
+        </div>
+
+        <div class="p1">
+            <button class="button" onclick="simular()">Simular!</button>
+        </div>
+
+        <div id="div_resposta" class="p1 campo_resultado">
+        </div>
+    </div>
+</body>
+
+<script>
+    function simular() {
+
+        let qnt_painel = Number(ipt_qnt_painel.value)
+        let tempo = Number(ipt_tempo_ativo.value)
+        let limpeza = slc_tem_limpeza.value
+        let potencia = slc_potencia.value
+
+        let mensagem = ``
+
+        // VALORES DA SIMULAÇÃO
+
+        let horas_sol = 5
+        let dias_mes = 30
+        let valor_kwh = 0.70
+
+        // Perda de eficiência causada pela sujeira
+
+        let perda_com_limpeza = 0.15
+        let perda_sem_limpeza = 0.25
+
+        // Custo de uma limpeza por painel
+
+        let custo_limpeza_painel = 30
+
+        // VALIDANDO A QUANTIDADE DE PAINÉIS
+
+        if (qnt_painel <= 0) {
+
+            div_resposta.innerHTML =
+                `Sem painel não é possível fazer uma simulação!`
+
+        } else {
+
+            // VALIDANDO A POTÊNCIA
+
+            if (potencia == 'opcao1') {
+
+                div_resposta.innerHTML =
+                    `Selecione uma opção de potência!`
+
+            } else {
+
+                // VERIFICANDO O TEMPO
+
+                if (tempo <= 0) {
+
+                    tempo = 12
+
+                    mensagem +=
+                        `Como o tempo informado é inválido, vamos considerar 12 meses!<br><br>`
+
+                } else {
+
+                    mensagem +=
+                        `Simulação realizada considerando ${tempo} meses.<br><br>`
+                }
+
+                // VERIFICANDO O PROGRAMA DE LIMPEZA
+
+                if (limpeza == 'opcao1') {
+
+                    div_resposta.innerHTML =
+                        `Selecione uma opção de programa de limpeza!`
+
+                } else {
+
+                    // POTÊNCIA MÉDIA
+
+                    let potencia_media = 0
+
+                    if (potencia == 'opcao2') {
+
+                        potencia_media = 150
+
+                    } else {
+
+                        if (potencia == 'opcao3') {
+
+                            potencia_media = 400
+
+                        } else {
+
+                            potencia_media = 600
+                        }
+                    }
+
+                    // GERAÇÃO DE ENERGIA
+
+                    let energia_painel_mes =
+                        (potencia_media / 1000) *
+                        horas_sol *
+                        dias_mes
+
+                    let energia_total_mes =
+                        energia_painel_mes *
+                        qnt_painel
+
+                    // ECONOMIA GERADA
+
+                    let economia_mes =
+                        energia_total_mes *
+                        valor_kwh
+
+                    // PERDA POR SUJEIRA
+
+                    let perda_sujeira = 0
+
+                    if (limpeza == 'opcao2') {
+
+                        // Empresa possui programa de limpeza
+
+                        perda_sujeira =
+                            perda_com_limpeza
+
+                    } else {
+
+                        // Empresa não possui programa de limpeza
+
+                        perda_sujeira =
+                            perda_sem_limpeza
+                    }
+
+                    let energia_perdida_mes =
+                        energia_total_mes *
+                        perda_sujeira
+
+                    let dinheiro_perdido_mes =
+                        energia_perdida_mes *
+                        valor_kwh
+
+                    let dinheiro_perdido_total =
+                        dinheiro_perdido_mes *
+                        tempo
+
+                    // LIMPEZAS
+
+                    // Consideramos uma limpeza necessária
+                    // a cada 3 meses.
+
+                    let limpezas_necessarias =
+                        tempo / 3
+
+                    let limpezas_desnecessarias = 0
+
+                    // PROGRAMA DE LIMPEZA
+
+                    if (limpeza == 'opcao2') {
+
+                        // Empresa possui programa de limpeza
+
+                        if (tempo >= 3) {
+
+                            limpezas_desnecessarias =
+                                tempo - limpezas_necessarias
+
+                        } else {
+
+                            limpezas_desnecessarias = 0
+                        }
+
+                    } else {
+
+                        // Empresa não possui programa
+
+                        limpezas_desnecessarias = 0
+                    }
+
+                    // CORRIGINDO O VALOR DE LIMPEZAS
+
+                    if (limpezas_desnecessarias < 0) {
+
+                        limpezas_desnecessarias = 0
+
+                    } else {
+
+                        limpezas_desnecessarias =
+                            limpezas_desnecessarias
+                    }
+
+                    // CUSTO DAS LIMPEZAS DESNECESSÁRIAS
+
+                    let dinheiro_desperdicado_limpeza =
+                        limpezas_desnecessarias *
+                        qnt_painel *
+                        custo_limpeza_painel
+
+                    // TOTAL PERDIDO
+
+                    let desperdicio_atual =
+                        dinheiro_perdido_total +
+                        dinheiro_desperdicado_limpeza
+
+                    // ECONOMIA COM A CELLARA
+
+                    /*
+                        A Cellara não limpa os painéis.
+
+                        Ela monitora os painéis e envia alertas
+                        indicando quando uma limpeza é necessária.
+
+                        Com o monitoramento, consideramos que
+                        a empresa consegue reduzir a perda
+                        causada pelo acúmulo de sujeira.
+
+                        Para a simulação, consideramos uma
+                        perda de 5% com o monitoramento.
+                    */
+
+                    let perda_com_cellara = 0.05
+
+                    let energia_perdida_cellara_mes =
+                        energia_total_mes *
+                        perda_com_cellara
+
+                    let dinheiro_perdido_cellara_mes =
+                        energia_perdida_cellara_mes *
+                        valor_kwh
+
+                    let dinheiro_perdido_cellara_total =
+                        dinheiro_perdido_cellara_mes *
+                        tempo
+
+                    // ECONOMIA GERADA PELO MONITORAMENTO
+
+                    let economia_energia =
+                        dinheiro_perdido_total -
+                        dinheiro_perdido_cellara_total
+
+                    // ECONOMIA COM LIMPEZAS
+
+                    let economia_limpeza =
+                        dinheiro_desperdicado_limpeza
+
+                    // ECONOMIA TOTAL
+
+                    let economia_total =
+                        economia_energia +
+                        economia_limpeza
+
+                    // RESULTADO
+
+                    mensagem += `
+
+                        <b>RESULTADO DA SIMULAÇÃO</b>
+
+                        <br><br>
+
+                        Quantidade de painéis:
+                        <b>${qnt_painel}</b>
+
+                        <br>
+
+                        Potência média considerada:
+                        <b>${potencia_media}W</b>
+
+                        <br>
+
+                        Tempo analisado:
+                        <b>${tempo} meses</b>
+
+                        <br><br>
+
+                        <b>GERAÇÃO DE ENERGIA</b>
+
+                        <br><br>
+
+                        Energia gerada por mês:
+                        <b>${energia_total_mes.toFixed(2)} kWh</b>
+
+                        <br>
+
+                        Economia estimada por mês:
+                        <b>R$ ${economia_mes.toFixed(2)}</b>
+
+                        <br><br>
+
+                        <b>IMPACTO DA SUJEIRA</b>
+
+                        <br><br>
+
+                        Perda estimada:
+                        <b>${(perda_sujeira * 100).toFixed(0)}%</b>
+
+                        <br>
+
+                        Energia perdida por mês:
+                        <b>${energia_perdida_mes.toFixed(2)} kWh</b>
+
+                        <br>
+
+                        Dinheiro perdido no período:
+                        <b>R$ ${dinheiro_perdido_total.toFixed(2)}</b>
+
+                        <br><br>
+                    `
+
+                    // RESULTADO DA LIMPEZA
+
+                    if (limpeza == 'opcao2') {
+
+                        mensagem += `
+
+                            <b>PROGRAMA DE LIMPEZA</b>
+
+                            <br><br>
+
+                            A empresa possui um programa
+                            de limpeza.
+
+                            <br>
+
+                            Limpezas potencialmente
+                            desnecessárias:
+                            <b>${limpezas_desnecessarias.toFixed(0)}</b>
+
+                            <br>
+
+                            Dinheiro potencialmente desperdiçado:
+                            <b>R$ ${dinheiro_desperdicado_limpeza.toFixed(2)}</b>
+
+                            <br><br>
+                        `
+
+                    } else {
+
+                        mensagem += `
+
+                            <b>PROGRAMA DE LIMPEZA</b>
+
+                            <br><br>
+
+                            A empresa não possui um
+                            programa de limpeza.
+
+                            <br><br>
+                        `
+                    }
+
+                    // CELLARA
+
+                    mensagem += `
+
+                        <b>COM A CELLARA</b>
+
+                        <br><br>
+
+                        A Cellara instala sensores nos
+                        painéis solares para monitorar
+                        suas condições.
+
+                        <br><br>
+
+                        Quando o sistema identifica que
+                        uma limpeza pode ser necessária,
+                        <br>
+                        a empresa recebe um alerta.
+
+                        <br><br>
+
+                        Dessa forma, a empresa pode
+                        realizar a limpeza no momento
+                        adequado,
+                        <br>
+                        evitando gastos desnecessários
+                        e reduzindo perdas de geração
+                        de energia.
+
+                        <br><br>
+
+                        <b>ECONOMIA POTENCIAL</b>
+
+                        <br><br>
+
+                        Economia relacionada à redução
+                        da perda de energia:
+                        <b>R$ ${economia_energia.toFixed(2)}</b>
+
+                        <br>
+
+                        Economia com limpezas
+                        desnecessárias:
+                        <b>R$ ${economia_limpeza.toFixed(2)}</b>
+
+                        <br><br>
+
+                        <b>ECONOMIA POTENCIAL TOTAL:</b>
+
+                        <br>
+
+                        <b>R$ ${economia_total.toFixed(2)}</b>
+
+                        <br><br>
+
+                        <b>CONCLUSÃO</b>
+
+                        <br><br>
+
+                        Com base nos valores informados,
+                        o monitoramento da Cellara
+                        <br>
+                        pode ajudar sua empresa a
+                        identificar o momento adequado
+                        para realizar a limpeza dos painéis.
+
+                        <br><br>
+
+                        Isso pode reduzir tanto a perda
+                        de geração causada pelo acúmulo
+                        de sujeira
+                        <br>
+                        quanto os gastos com limpezas
+                        realizadas sem necessidade.
+
+                        <br><br>
+
+                        <b>Potencial de economia:
+                        R$ ${economia_total.toFixed(2)}</b>
+                    `
+
+                    div_resposta.innerHTML = mensagem
+                }
+            }
+        }
+    }
+</script>
+
+</html>

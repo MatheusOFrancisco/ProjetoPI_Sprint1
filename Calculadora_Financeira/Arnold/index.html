@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de perda solar</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <h1>Calculadora de perda solar</h1>
+  <p class="intro">
+    Preencha os dados da sua instalação de energia solar para descobrir
+    quanto você pode estar perdendo.
+  </p>
+  <div class="caixa">
+
+
+    <label>Potência instalada (kWp)</label>
+    <input type="number" id="potencia" placeholder="Exemplo: 40">
+    <label>Geração real média por mês (kWh)</label>
+    <input type="number" id="geracao" placeholder="Exemplo: 4200">
+    <label>Tarifa de energia (R$ por kWh)</label>
+    <input type="number" id="tarifa" step="0.01" placeholder="Exemplo: 0.85">
+    <button onclick="calcular()">Calcular</button>
+
+  </div>
+  <div class="caixa" id="resultado">
+    <p>
+      Sua instalação está gerando
+      <strong id="txtDesempenho"></strong>
+      do que deveria.
+    </p>
+    <p>
+      Perda estimada por mês:
+      <strong id="txtPerdaMes"></strong>
+    </p>
+    <p>
+      Perda estimada por ano:
+      <strong id="txtPerdaAno"></strong>
+    </p>
+    <p id="txtDiagnostico"></p>
+  </div>
+
+  <script>
+
+    // Função executada quando o usuário clica no botão "Calcular"
+    function calcular() {
+
+      // Pega o valor digitado no campo de potência
+      // e transforma o texto recebido em número decimal
+      let potencia = parseFloat(document.getElementById("potencia").value);
+
+      // Pega o valor da geração real e transforma em número decimal
+      let geracaoReal = parseFloat(document.getElementById("geracao").value);
+
+      // Pega o valor da tarifa e transforma em número decimal
+      let tarifa = parseFloat(document.getElementById("tarifa").value);
+
+
+      if (potencia == "" || geracaoReal == "" || tarifa == "") {
+        alert("Preencha todos os campos antes de calcular.");
+        return;
+      }
+
+
+      // Quantidade média considerada de horas de sol por dia
+      let horasSol = 5;
+
+      // Eficiência esperada do sistema.
+      // 0.78 representa 78% de eficiência
+      let eficiencia = 0.78;
+      // Calcula a geração mensal esperada do sistema
+
+      // potência × horas de sol por dia × 30 dias × eficiência
+      let geracaoEsperada = potencia * horasSol * 30 * eficiencia;
+
+      // Calcula quantos kWh deixaram de ser gerados
+      let perdaKwh = geracaoEsperada - geracaoReal;
+
+      // Se a geração real for maior que a esperada,
+      // não consideramos uma perda negativa
+      if (perdaKwh < 0) {
+        // Define a perda como zero
+        perdaKwh = 0;
+      }
+      // Calcula o percentual de desempenho do sistema
+      //
+      // geração real ÷ geração esperada × 100
+      let desempenho = (geracaoReal / geracaoEsperada) * 100;
+
+      // Impede que o desempenho exibido seja maior que 100%
+      if (desempenho > 100) {
+        desempenho = 100;
+      }
+
+      // Calcula quanto dinheiro é perdido por mês
+
+      // energia perdida × tarifa
+      let perdaMes = perdaKwh * tarifa;
+
+      // Calcula quanto dinheiro é perdido em um ano
+      let perdaAno = perdaMes * 12;
+
+      // Calcula o percentual de energia que foi perdida
+      let porcentagemPerda = 100 - desempenho;
+
+      let diagnostico;
+
+      // Verifica se a perda é de até 5%
+      if (porcentagemPerda <= 5) {
+        diagnostico = "Desempenho próximo do ideal. Mesmo assim, o monitoramento ajuda a identificar quedas.";
+        // Se não for até 5%, verifica se a perda é de até 15%
+      } else if (porcentagemPerda <= 15) {
+
+        diagnostico = "Perda moderada. Pode estar relacionada à sujeira ou ao sombreamento parcial.";
+        // Caso a perda seja maior que 15%
+      } else {
+        diagnostico = "Perda significativa. A instalação pode estar deixando de gerar uma quantidade considerável de energia.";
+      }
+
+      // Coloca o percentual de desempenho dentro do elemento
+      // que possui o id "txtDesempenho"
+
+      document.getElementById("txtDesempenho").innerHTML =
+        desempenho.toFixed(0) + "%";
+
+      document.getElementById("txtPerdaMes").innerHTML =
+        "R$ " + perdaMes.toFixed(2);
+
+      document.getElementById("txtPerdaAno").innerHTML =
+        "R$ " + perdaAno.toFixed(2);
+
+      document.getElementById("txtDiagnostico").innerHTML =
+        diagnostico;
+
+    }
+
+  </script>
+
+</body>
+
+</html>
