@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Simulador Financeiro Cellara</title>
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        padding: 20px;
+    }
+
+    .caixa {
+        background-color: hsl(59, 100%, 85%);
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 8px;
+
+    }
+
+    h1 {
+        font-size: 22px;
+        color: #1a1a1a;
+        text-align: center;
+    }
+
+    input,
+    select {
+        width: 100%;
+        height: 40px;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    button {
+
+        width: 100%;
+        padding: 10px;
+        background-color: #3ea03e;
+        color: white;
+        border-radius: 4px;
+        font-size: 16px;
+
+    }
+
+    .erro {
+        font-weight: bold;
+        display: block;
+        box-sizing: border-box;
+        margin-top: 20px;
+        padding: 15px;
+        background-color: #ecb9b9;
+        border: 1px solid #fb6640;
+        border-radius: 4px;
+        color: #000000;
+
+    }
+
+    .jada {
+
+
+        box-sizing: border-box;
+        margin-top: 20px;
+        padding: 15px;
+        background-color: aliceblue;
+        border: 2px solid #000000;
+        border-radius: 4px;
+        color: #000000;
+
+    }
+</style>
+
+<body>
+
+    <div class="caixa">
+        <h1>Simulador Financeiro</h1>
+
+        Potência instalada (kWp)
+        <input id="ipt_potencia">
+
+        Região da instalação
+        <select id="slct_regiao">
+            <option value="Selecione">Selecione uma opção</option>
+            <option value="norte">Norte</option>
+            <option value="nordeste">Nordeste</option>
+            <option value="centrooeste">Centro-Oeste</option>
+            <option value="sudeste">Sudeste</option>
+            <option value="sul">Sul</option>
+        </select>
+
+        Tarifa de energia (R$/kWh)<span style="color: grey; font-style: italic;font-size: small;">Preço em reais por kWh</span>
+        <input id="ipt_tarifa">
+
+        Perfil de sujeira ambiental do entorno
+        <select id="slct_perfil">
+            <option value="Selecione">Selecione uma opção</option>
+            <option value="baixo">Baixo (área rural/limpa)</option>
+            <option value="medio">Médio (área urbana comum)</option>
+            <option value="alto">Alto (poeira, rodovia de terra, zona agrícola)</option>
+        </select>
+
+        Tempo desde a última limpeza
+        <select id="slct_tempo">
+            <option value="Selecione">Selecione uma opção</option>
+            <option value="recente">Recente (até 30 dias)</option>
+            <option value="intermediario">Intermediário (1 a 6 meses)</option>
+            <option value="longo">Longo (mais de 6 meses)</option>
+        </select> <br><br>
+
+        <button onclick="calcular()">Calcular perda estimada</button><br><br>
+
+        <div id="div_resultado"></div>
+    </div>
+
+    <script>
+
+        function calcular() {
+
+            let potencia = Number(ipt_potencia.value);
+            let tarifa = Number(ipt_tarifa.value);
+            let regiao = slct_regiao.value;
+            let perfil = slct_perfil.value;
+            let tempo = slct_tempo.value;
+            
+
+
+            // validação simples dos campos numéricos
+            if (potencia <= 0 || tarifa <= 0 || ipt_tarifa.value.length == 0 || ipt_potencia.value.length == 0) {
+                div_resultado.innerHTML = `<div class="erro">Preencha a potência e/ou tarifa corretamente antes de calcular.</div>`;
+                return;
+
+            }
+
+            if (regiao == "Selecione" || perfil == "Selecione" || tempo == "Selecione") {
+                div_resultado.innerHTML = `<div class="erro">Por favor, preencha todos os campos corretamente</div>`
+                return;
+            }
+
+            // HSP médio (horas de sol pleno) por região - valores de referência
+            let hsp = 0;
+            if (regiao == "norte") {
+                hsp = 4.8;
+            } else if (regiao == "nordeste") {
+                hsp = 5.5;
+            } else if (regiao == "centrooeste") {
+                hsp = 5.2;
+            } else if (regiao == "sudeste") {
+                hsp = 5.0;
+            } else if (regiao == "sul") {
+                hsp = 4.4;
+            }
+
+            // faixa de perda anual por perfil de ambiente
+            let perfilMin = 0;
+            let perfilMax = 0;
+            if (perfil == "baixo") {
+                perfilMin = 0.03;
+                perfilMax = 0.05;
+            } else if (perfil == "medio") {
+                perfilMin = 0.05;
+                perfilMax = 0.10;
+            } else if (perfil == "alto") {
+                perfilMin = 0.10;
+                perfilMax = 0.25;
+            }
+
+            let amplitude = perfilMax - perfilMin;
+
+            // posição dentro da faixa do perfil, de acordo com o tempo sem limpeza
+            let posicaoMin = 0;
+            let posicaoMax = 0;
+            if (tempo == "recente") {
+                posicaoMin = 0;
+                posicaoMax = 0.3;
+            } else if (tempo == "intermediario") {
+                posicaoMin = 0.2;
+                posicaoMax = 0.7;
+            } else if (tempo == "longo") {
+                posicaoMin = 0.6;
+                posicaoMax = 1;
+            }
+
+            let percPerdaMin = perfilMin + (amplitude * posicaoMin);
+            let percPerdaMax = perfilMin + (amplitude * posicaoMax);
+
+            // PR ideal de referência - ratio performance
+            let prIdeal = 0.8;
+
+            // geração teórica mensal (30 dias)
+            let geracaoTeoricaMensal = potencia * hsp * 30 * prIdeal;
+
+            // energia perdida em kWh
+            let perdaKwhMin = geracaoTeoricaMensal * percPerdaMin;
+            let perdaKwhMax = geracaoTeoricaMensal * percPerdaMax;
+            // energia anual perdida
+            let perdaAnualMinKWH = perdaKwhMin * 12
+            let perdaAnualMaxKWH = perdaKwhMax * 12
+
+            // perda financeira mensal
+            let perdaRsMensalMin = perdaKwhMin * tarifa;
+            let perdaRsMensalMax = perdaKwhMax * tarifa;
+
+            // perda financeira anual
+            let perdaRsAnualMin = perdaRsMensalMin * 12;
+            let perdaRsAnualMax = perdaRsMensalMax * 12;
+
+
+            div_resultado.innerHTML = `<div class="jada">
+    <strong>Estimativa de perda mensal:</strong> R$ <u>${perdaRsMensalMin.toFixed(2)}</u>
+    a R$ <u>${perdaRsMensalMax.toFixed(2)}</u><br>
+    <strong>Estimativa de perda mensal:</strong> <u>${perdaKwhMin.toFixed(2)}</u> kWh a <u>${perdaKwhMax.toFixed(2)}</u> kWh<br><br>
+    <strong>Projeção anual:</strong> R$ <u>${perdaRsAnualMin.toFixed(2)}</u>
+    a R$ <u>${perdaRsAnualMax.toFixed(2)}</u><br>
+    <strong>Projeção anual:</strong>  <u>${perdaAnualMinKWH.toFixed(2)}</u> kWh a <u>${perdaAnualMaxKWH.toFixed(2)}</u> kWh<br><br>
+    `;
+        }
+
+    </script>
+
+</body>
+
+</html>
