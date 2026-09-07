@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Financeira ~v.1~Alexandre</title>
+</head>
+
+<body>
+    <h3>Simulador Financeiro</h3>
+    <div id="div_form">
+        <p id="p_regiao">Informe a região de sua usina solar:</p>
+        <select id="sel_regiao">
+            <option value="0">Selecione uma opção</option>
+            <option value="1">Centro Oeste</option>
+            <option value="2">Nordeste</option>
+            <option value="3">Norte</option>
+            <option value="4">Sudeste</option>
+            <option value="5">Sul</option>
+        </select>
+        <p id="p_ambiente">Informe o ambiente das instalações de sua empresa:</p>
+        <select id="sel_ambiente">
+            <option value="0">Selecione uma opção</option>
+            <option value="1">Rural - Isolado</option>
+            <option value="2">Próximo de Rodovias ou Indústrias</option>
+            <option value="3">Urbano de Baixa Densidade</option>
+            <option value="4">Urbano de Alta Densidade</option>
+        </select>
+        <p id="p_qntPainel">Informe a quantidade de painéis solares instalados:</p>
+        <input id="ipt_qntPainel">
+        <p>Informe a potência máxima do painel em (Wp): <i style="color:gray;">*opcional</i></p>
+        <input id="ipt_potenciaPainel">
+        <p>Sua empresa realiza uma limpeza programada?</p>
+        <select id="sel_limpeza" onchange="showPeriodo()">
+            <option value="0">Não</option>
+            <option value="1">Sim</option>
+        </select>
+        <div id="div_periodoLimpeza" style="display: none;">
+            <p id="p_periodoLimpeza">Informe a periodicidade da limpeza (em meses):</p>
+            <input id="ipt_periodoLimpeza">
+            <p style="color:gray; font-size: small;"><i>Ex: 4: para limpezas a cada 4 meses, 1: limpeza realizada todo
+                    mês</i></p>
+        </div>
+        <br><br>
+        <button onclick="simular()">Simular</button>
+    </div>
+    <div id="div_msg" style="display:none;"></div>
+
+</body>
+<script>
+    function simular() {
+        let erro = false
+        //-Recebendo e validadno input
+        //  localização da empresa - regiao
+        let ax_regiao = sel_regiao.value
+        if (sel_regiao.value == 0) {
+            alert("Por favor, informe a região da sua empresa.")
+            p_regiao.style = 'color: red; font-weigth:bold;'
+            sel_regiao.style = 'border-color: red;'
+            erro = true
+        } else {
+            p_regiao.style = 'color: black;'
+            sel_regiao.style = 'border-color: none;'
+        }
+        //  ambiente das instalações da empresa
+        let ax_ambiente = sel_ambiente.value
+        if (sel_ambiente.value == 0) {
+            alert("Por favor, informe o ambiente da localização da sua empresa.")
+            p_ambiente.style = 'color: red; font-weigth:bold;'
+            sel_ambiente.style = 'border-color: red;'
+            erro = true
+        } else {
+            p_ambiente.style = 'color: black;'
+            sel_ambiente.style = 'border-color: none;'
+        }
+        //  quantidade de paineis
+        let ax_qntPainel = Number(ipt_qntPainel.value)
+        if (ipt_qntPainel.value.length == 0) {
+            alert("Por favor, insira a quantidade de painéis solares instalados")
+            p_qntPainel.style = 'color: red; font-weigth:bold;'
+            ipt_qntPainel.style = 'border-color: red;'
+            erro = true
+        } else {
+            if (ax_qntPainel <= 0) {
+                alert("Por favor, insira uma quantidade válida de painéis solares instalados")
+                p_qntPainel.style = 'color: red; font-weigth:bold;'
+                ipt_qntPainel.style = 'border-color: red;'
+                erro = true
+            } else {
+                p_qntPainel.style = 'color: black;'
+                ipt_qntPainel.style = 'border-color: none;'
+            }
+        }
+        //  periodo de limpeza (opcional)
+        let ax_periodoLimpeza = Number(ipt_periodoLimpeza.value)
+        if (sel_limpeza.value == 1) {
+            if (ipt_periodoLimpeza.value.length == 0) {
+                alert("Por favor, insira um valor válido para o período de limpeza")
+                p_periodoLimpeza.style = 'color: red; font-weigth:bold;'
+                ipt_periodoLimpeza.style = 'border-color: red;'
+                erro = true
+            } else {
+                if (ax_periodoLimpeza <= 0) {
+                    alert("Por favor, insira um valor válido para o período de limpeza")
+                    p_periodoLimpeza.style = 'color: red; font-weigth:bold;'
+                    ipt_periodoLimpeza.style = 'border-color: red;'
+                    erro = true
+                } else if (ax_periodoLimpeza > 12) {
+                    alert("Por favor, insira um valor válido para o período de limpeza (Máximo 12 - Limpeza anual)")
+                    p_periodoLimpeza.style = 'color: red; font-weigth:bold;'
+                    ipt_periodoLimpeza.style = 'border-color: red;'
+                    erro = true
+                } else {
+                    p_periodoLimpeza.style = 'color: black;'
+                    ipt_periodoLimpeza.style = 'border-color: none;'
+                }
+            }
+        }
+        if (erro == false) {
+            calcular()
+        }
+
+    }
+    function calcular() {
+        //-Simular % de perda e informar uma estimativa de prejuizo
+        //-Cálculos da simulação
+        let ax_qntPainel = Number(ipt_qntPainel.value)
+        //  periodo de limpeza do painel
+        let ax_periodoLimpeza = Number(ipt_periodoLimpeza.value)
+        if (sel_limpeza.value == 0) {
+            ax_periodoLimpeza = 0
+        }
+        //  potencia do painel (opcional) - valor padrão = 550 Wp -> 0.55 kWp
+        let ax_potencia = Number(ipt_potenciaPainel.value) / 1000
+        if (ax_potencia == 0) {
+            // valor padrão da potencia
+            ax_potencia = 0.55
+        }
+        // calculo de coeficiente de sujeira (ax_cSujeira) por ambiente
+        let ax_cSujeira = 0
+        if (sel_ambiente.value == 1) {
+            // rural / isolado 
+            ax_cSujeira = 0.2
+        } else if (sel_ambiente.value == 2) {
+            // proximo rodovias / industrias
+            ax_cSujeira = 0.5
+        } else if (sel_ambiente.value == 3) {
+            // urbano baixa densidade
+            ax_cSujeira = 0.4
+        } else if (sel_ambiente.value == 4) {
+            // urbano alta densidade
+            ax_cSujeira = 0.8
+        } else {
+            // pass
+        }
+        let ax_diasSeco = 0     // calcular acumulo de sujeira (base ax_cSujeira)
+        let ax_tempMedia = 0    // tempMedia da celula do painel
+        let ax_irrad = 0        // nivel de radiação incidente
+        let ax_tarifaMedia = 0
+        if (sel_regiao.value == 1) {
+            // regiao Centro oeste
+            // dias secos media ~90  temp media 20~26    irrad 5.07  tarifa 0.73
+            ax_diasSeco = 90
+            ax_tempMedia = 46
+            ax_irrad = 5.07
+            ax_tarifaMedia = 0.73
+        } else if (sel_regiao.value == 2) {
+            // regiao nordeste
+            // dias secos media ~90  temp media 20~34    irrad 5.49  tarifa 0.68
+            ax_diasSeco = 90
+            ax_tempMedia = 48
+            ax_irrad = 5.49
+            ax_tarifaMedia = 0.68
+        } else if (sel_regiao.value == 3) {
+            // regiao norte
+            // dias secos media ~70  temp media 24~26    irrad 4.64  tarifa 0.71
+            ax_diasSeco = 70
+            ax_tempMedia = 45
+            ax_irrad = 4.64
+            ax_tarifaMedia = 0.71
+        } else if (sel_regiao.value == 4) {
+            // regiao sudeste
+            // dias secos media ~80  temp media 18~30    irrad 5.07  tarifa 0.76
+            ax_diasSeco = 80
+            ax_tempMedia = 44
+            ax_irrad = 5.07
+            ax_tarifaMedia = 0.76
+        } else if (sel_regiao.value == 5) {
+            // regiao sul
+            // dias secos media ~60  temp media 14~22    irrad 4.40  tarifa 0.73
+            ax_diasSeco = 60
+            ax_tempMedia = 42
+            ax_irrad = 4.4
+            ax_tarifaMedia = 0.73
+        } else {
+            // pass
+        }
+        let ax_desempenhoIdeal = 0.9    // as placas raramente atingem o pico máximo de geração
+        let ax_desempenhoReal = ax_desempenhoIdeal
+        let ax_potenciaPorPainel = ax_potencia * ax_irrad
+        let ax_perdaSujeira = 0
+        let ax_diasSemLimpeza = ax_periodoLimpeza * 30
+        if (ax_tempMedia > 25) {
+            // perda por temperatura
+            ax_desempenhoIdeal = ax_desempenhoIdeal - ((ax_tempMedia - 25) * 0.0045)
+        }
+        // perda por sujidade por dia
+        if (ax_periodoLimpeza == 0) {
+            ax_perdaSujeira = ax_diasSeco * ax_cSujeira
+        } else if (ax_diasSemLimpeza <= ax_diasSeco) {
+            ax_perdaSujeira = ax_diasSemLimpeza * ax_cSujeira
+        } else {
+            ax_perdaSujeira = ax_diasSeco * ax_cSujeira
+        }
+        ax_desempenhoReal = ax_desempenhoIdeal - (ax_perdaSujeira * 0.01)
+        //-Definindo valores para exibição
+        //  calcular custo da limpeza anual
+        let ax_custoLimpeza = 10
+        if (ax_qntPainel > 750) {
+            if (ax_qntPainel > 1000) {
+                ax_custoLimpeza = 5
+            } else {
+                ax_custoLimpeza = 7.5
+            }
+        }
+        let ax_custoLimpezaTotal = ax_custoLimpeza * ax_qntPainel * (12 / ax_periodoLimpeza) / 12
+        let ax_limpezaDesnecessária = ax_periodoLimpeza / (ax_diasSeco / 30)
+        //  geração ideal x geração real
+        let ax_geracaoDiariaIdeal = ax_potenciaPorPainel * ax_qntPainel * ax_desempenhoIdeal
+        let ax_geracaoDiariaReal = ax_potenciaPorPainel * ax_qntPainel * ax_desempenhoReal
+        let ax_geracaoPrejuizoPercent = (ax_geracaoDiariaIdeal - ax_geracaoDiariaReal) * 100 / ax_geracaoDiariaIdeal
+        //  valores baseados nas tarifas
+        let ax_valorGeradoIdeal = ax_geracaoDiariaIdeal * ax_tarifaMedia
+        let ax_valorGeradoReal = ax_geracaoDiariaReal * ax_tarifaMedia
+        let ax_valorPrejuizoMensal = (ax_valorGeradoIdeal - ax_valorGeradoReal) * 30
+        //  mensagens para exibição
+        //      ADICIONAR FORMATAÇÂO CONDICIONAL PARA NíVEIS CRíTICOS! ( < 30% < 50%)
+        let msg1 = `<p>Sua usina solar poderia estar gerando ${(ax_geracaoDiariaIdeal * 30).toFixed(2)} kWp por mês, mas sem o controle de limpeza adequado, está gerando apenas ${(ax_geracaoDiariaReal * 30).toFixed(2)} kWp por mês. Uma perda de aproximadamente ${ax_geracaoPrejuizoPercent.toFixed(0)}% na sua produção mensal.</p>`
+        let msg2 = `<p>Avaliando o preço médio da tarifa de energia em sua região, esta perda de eficiência está gerando um prejuízo de aproximadamente R$ ${(ax_valorPrejuizoMensal).toFixed(2)} mensal.</p>`
+        let msg3 = `Além disso, como possui uma limpeza programada sem os dados concretos sobre a necessidade de uma limpeza, seu custo é ainda maior, chegando à R$ ${(ax_valorPrejuizoMensal + ax_custoLimpezaTotal).toFixed(2)} mensal, sendo R$ ${(ax_custoLimpezaTotal / ax_limpezaDesnecessária).toFixed(2)} somente com a limpeza sem que houvesse necessidade.`
+        let buttonNovaConsulta = "<br><br><button onclick='exibirForm()'>Fazer nova Consulta</button>"
+        let buttonContato = "<br><br><button onclick='contato()'>Faça o seu Orçamento!</button>"
+        div_msg.innerHTML = msg1 + msg2
+        if (sel_limpeza.value == 1) {
+            div_msg.innerHTML += msg3
+        }
+        div_msg.innerHTML += buttonNovaConsulta + buttonContato
+        exibirMensagem()
+
+    }
+    function exibirMensagem() {
+        div_form.style = "display: none;"
+        div_msg.style = "display: block;"
+    }
+    function exibirForm() {
+        sel_regiao.value = 0
+        sel_ambiente.value = 0
+        ipt_qntPainel.value = ''
+        ipt_potenciaPainel.value = ''
+        sel_limpeza.value = 0
+        ipt_periodoLimpeza.value = ''
+        div_periodoLimpeza.style = 'display: none;'
+        div_form.style = "display: block;"
+        div_msg.style = "display: none;"
+    }
+    function contato() {
+        div_msg.innerHTML = "<p>Agradecemos a preferência!</p><p>Entraremos em contato em breve!</p>"
+    }
+    function showPeriodo() {
+        //  mostrar/ocultar campo de periodicidade de limpeza dos paineis
+        if (sel_limpeza.value == 0) {
+            div_periodoLimpeza.style = 'display: none;'
+        } else {
+            div_periodoLimpeza.style = 'display: block;'
+        }
+    }
+</script>
+
+</html>
