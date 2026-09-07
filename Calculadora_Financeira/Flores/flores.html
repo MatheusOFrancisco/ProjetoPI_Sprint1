@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Perdas por Sujidade Solar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="pagina">
+
+    <h1>Calculadora de Prejuízo por Sujidade em Painéis Solares</h1>
+    <p class="descricao">Descubra quanto sua empresa perde por mês e por ano por causa do acúmulo de sujeira nos painéis solares.</p>
+
+    Número de painéis <input type="text" id="ipt_qtd_placas" class="campo" placeholder="Ex: 10"> <br>
+    Geração mensal por painel sem sujidade (kWh) <input type="text" id="ipt_geracao" class="campo" placeholder="Ex: 82.5"> <br>
+    Perda por sujidade (%) <input type="text" id="ipt_perda" class="campo" placeholder="Ex: 19.5"> <br>
+    Preço do kWh (R$) <input type="text" id="ipt_preco" class="campo" placeholder="Ex: 0.79"> <br>
+
+    <button onclick="calcular()" class="botao">Calcular</button>
+    <button onclick="limpar()" class="botao botao-limpar">Limpar</button>
+
+    <div id="div_exibir" class="resultado"></div>
+
+</body>
+
+<script>
+
+    function calcular() {
+        let ax_placas = Number(ipt_qtd_placas.value);
+        let ax_geracao = Number(ipt_geracao.value);
+        let ax_perda = Number(ipt_perda.value);
+        let ax_preco = Number(ipt_preco.value);
+
+        if (ipt_qtd_placas.value.length == 0) {
+
+            alert("Preencha a quantidade de painéis.");
+
+        } else if (isNaN(ax_placas) || ax_placas <= 0) {
+
+            alert("A quantidade de painéis precisa ser um número maior que zero.");
+
+        } else if (ipt_geracao.value.length == 0) {
+
+            alert("Preencha a geração mensal por painel.");
+
+        } else if (isNaN(ax_geracao) || ax_geracao <= 0) {
+
+            alert("A geração mensal precisa ser um número maior que zero.");
+
+        } else if (ipt_perda.value.length == 0) {
+
+            alert("Preencha a perda por sujidade.");
+
+        } else if (isNaN(ax_perda) || ax_perda < 0) {
+
+            alert("A perda por sujidade precisa ser um número válido.");
+
+        } else if (ipt_preco.value.length == 0) {
+
+            alert("Preencha o preço do kWh.");
+
+        } else if (isNaN(ax_preco) || ax_preco <= 0) {
+
+            alert("O preço do kWh precisa ser um número maior que zero.");
+
+        } else {
+
+            let ax_geracao_total_mes = ax_geracao * ax_placas;
+            let ax_energia_perdida_mes = ax_geracao_total_mes * (ax_perda / 100);
+            let ax_energia_perdida_ano = ax_energia_perdida_mes * 12;
+
+            let ax_prejuizo_mes = ax_energia_perdida_mes * ax_preco;
+            let ax_prejuizo_ano = ax_prejuizo_mes * 12;
+
+            div_exibir.innerHTML = `Geração total esperada por mês: ${ax_geracao_total_mes.toFixed(2)} kWh <br>
+                Energia perdida por mês: ${ax_energia_perdida_mes.toFixed(2)} kWh <br>
+                Energia perdida por ano: ${ax_energia_perdida_ano.toFixed(2)} kWh <br>
+                Prejuízo por mês: R$ ${ax_prejuizo_mes.toFixed(2)} <br>
+                Prejuízo por ano: R$ ${ax_prejuizo_ano.toFixed(2)}`
+
+        }
+
+    }
+
+    function limpar() {
+        ipt_qtd_placas.value = "";
+        ipt_geracao.value = "";
+        ipt_perda.value = "";
+        ipt_preco.value = "";
+        div_exibir.innerHTML = "";
+    }
+
+</script>
+
+</html>
