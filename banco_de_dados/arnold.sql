@@ -65,11 +65,9 @@ CREATE TABLE leituras_sensor (
 -- =========================================================
 CREATE TABLE alertas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    instalacao_id INT NOT NULL,
-    tipo_causa_provavel VARCHAR(30) NOT NULL,  -- sujeira, sombreamento, normal
+    sensor_id INT NOT NULL,
     perda_percentual DECIMAL(5,2) NOT NULL,
     data_hora_alerta DATETIME DEFAULT CURRENT_TIMESTAMP,
- 
 );
  
  

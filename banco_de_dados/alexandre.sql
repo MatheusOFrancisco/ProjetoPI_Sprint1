@@ -19,6 +19,7 @@ CREATE TABLE contrato (
     CONSTRAINT chk_plano CHECK(plano IN('fixo', 'manutenção', 'recorrente')),
     id_empresa INT NOT NULL
 );
+
 CREATE TABLE usuario (
 	id_usuario INT PRIMARY KEY AUTO_INCREMENT,
     nome_usuario VARCHAR(40) NOT NULL,
@@ -30,6 +31,7 @@ CREATE TABLE usuario (
     permissao TINYINT DEFAULT 1, -- 3: Permissão total (+Solicitações) / 2: Downloads e Visualização / 1: Apenas Visualização / 0: Sem permissões
     id_empresa INT NOT NULL
 );
+
 CREATE TABLE sensor (
 	id_sensor INT PRIMARY KEY AUTO_INCREMENT,
     ip VARCHAR(10),
@@ -49,6 +51,7 @@ CREATE TABLE painel (
     geracao_max DECIMAL (5,2),
     id_sensor INT NOT NULL
 );
+
 CREATE TABLE medicao_painel (
 	id_medicao_painel INT PRIMARY KEY AUTO_INCREMENT,
 	tensao_medida DECIMAL (5,2),
@@ -72,3 +75,4 @@ INSERT INTO usuario (nome_usuario, sobrenome_usuario, email, senha, id_empresa) 
 
 INSERT INTO contrato (contratante, plano, id_empresa) VALUES
 ('Fernanda Caramico', 'recorrente', 1);
+
