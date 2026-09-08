@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<title>Simulador Solar</title>
+
+<style>
+
+body {
+    font-family: Arial;
+    background-color: #f4f6f8;
+    padding: 40px;
+}
+
+.card {
+    background-color: white;
+    padding: 30px;
+    width: 400px;
+    margin: auto;
+}
+
+h2 {
+    text-align: center;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+button {
+    margin-top: 20px;
+    background-color: green;
+    color: white;
+    border: none;
+}
+
+#resultado {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #eafaf1;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Simulador de Eficiência Solar</h2>
+
+<label>Quantidade de placas:</label>
+<input type="number" id="qtdPlacas">
+
+<label>Potência de cada placa (Wp):</label>
+<input type="number" id="potenciaPlaca">
+
+<label>Região:</label>
+
+<select id="regiao">
+    <option value="norte">Norte</option>
+    <option value="nordeste">Nordeste</option>
+    <option value="centro-oeste">Centro-Oeste</option>
+    <option value="sudeste">Sudeste</option>
+    <option value="sul">Sul</option>
+</select>
+
+<label>Custo do kWh:</label>
+<input type="number" id="custoKwh" step="0.01">
+
+<button onclick="calcular()">Calcular</button>
+
+<p id="mensagem" style="color: red; text-align: center;"></p>
+
+<div id="resultado"> </div>
+
+</div>
+
+<script>
+
+function calcular() {
+
+    var placas = Number(qtdPlacas.value);
+    var potPlaca = Number(potenciaPlaca.value);
+    var regiaoEscolhida = regiao.value;
+    var custo = Number(custoKwh.value);
+
+    if (placas <= 0) {
+        mensagem.innerHTML = `Preencha todos os campos com valores válidos.`;
+    } else if (potPlaca <= 0) {
+        mensagem.innerHTML = `Preencha todos os campos com valores válidos.`;
+    } else if (custo <= 0) {
+        mensagem.innerHTML = `Preencha todos os campos com valores válidos.`;
+    } else {
+
+        mensagem.innerHTML = ``;
+
+        var hsp;
+
+        if (regiaoEscolhida == "norte") {
+            hsp = 4.8;
+        }
+
+        if (regiaoEscolhida == "nordeste") {
+            hsp = 5.5;
+        }
+
+        if (regiaoEscolhida == "centro-oeste") {
+            hsp = 5.3;
+        }
+
+        if (regiaoEscolhida == "sudeste") {
+            hsp = 5.0;
+        }
+
+        if (regiaoEscolhida == "sul") {
+            hsp = 4.5;
+        }
+
+        var potenciaTotal = placas * potPlaca / 1000;
+
+        var geracaoDia = potenciaTotal * hsp;
+
+        var perdaSem = geracaoDia * 18 / 100;
+
+        var perdaCom = geracaoDia * 1 / 100;
+
+        var valorPrejuizoSem = perdaSem * custo * 365;
+
+        var valorPrejuizoCom = perdaCom * custo * 365;
+
+        var valorEconomia = valorPrejuizoSem - valorPrejuizoCom;
+
+        resultado.innerHTML = `
+    Potência total: ${potenciaTotal.toFixed(2)} kWp <br>
+
+    Geração diária: ${geracaoDia.toFixed(2)} <br>
+
+    Prejuízo sem monitoramento: R$ ${valorPrejuizoSem.toFixed(2)} <br>
+
+    Prejuízo com monitoramento: R$ ${valorPrejuizoCom.toFixed(2)} <br>
+
+    Economia:  R$ ${valorEconomia.toFixed(2)}<br>
+
+    Sua empresa pode estar deixando esse valor na mesa por falta de monitoramento em tempo real da luminosidade.`
+    }
+
+}
+
+</script>
+
+</body>
+</html>
