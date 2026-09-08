@@ -1,28 +1,24 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Perdas por Sujidade Solar</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body class="pagina">
-
     <h1>Calculadora de Prejuízo por Sujidade em Painéis Solares</h1>
     <p class="descricao">Descubra quanto sua empresa perde por mês e por ano por causa do acúmulo de sujeira nos painéis solares.</p>
 
-    Número de painéis <input type="text" id="ipt_qtd_placas" class="campo" placeholder="Ex: 10"> <br>
-    Geração mensal por painel sem sujidade (kWh) <input type="text" id="ipt_geracao" class="campo" placeholder="Ex: 82.5"> <br>
-    Perda por sujidade (%) <input type="text" id="ipt_perda" class="campo" placeholder="Ex: 19.5"> <br>
-    Preço do kWh (R$) <input type="text" id="ipt_preco" class="campo" placeholder="Ex: 0.79"> <br>
+    Número de painéis <input type="text" id="ipt_qtd_placas" class="campo"> <br>
+    Geração mensal por painel sem sujidade (kWh) <input type="text" id="ipt_geracao" class="campo"> <br>
+    Perda por sujidade (%) <input type="text" id="ipt_perda" class="campo"> <br>
+    Preço do kWh (R$) <input type="text" id="ipt_preco" class="campo"> <br>
 
     <button onclick="calcular()" class="botao">Calcular</button>
     <button onclick="limpar()" class="botao botao-limpar">Limpar</button>
 
     <div id="div_exibir" class="resultado"></div>
-
 </body>
 
 <script>
@@ -37,7 +33,7 @@
 
             alert("Preencha a quantidade de painéis.");
 
-        } else if (isNaN(ax_placas) || ax_placas <= 0) {
+        } else if (ax_placas <= 0) {
 
             alert("A quantidade de painéis precisa ser um número maior que zero.");
 
@@ -45,7 +41,7 @@
 
             alert("Preencha a geração mensal por painel.");
 
-        } else if (isNaN(ax_geracao) || ax_geracao <= 0) {
+        } else if (ax_geracao <= 0) {
 
             alert("A geração mensal precisa ser um número maior que zero.");
 
@@ -53,7 +49,7 @@
 
             alert("Preencha a perda por sujidade.");
 
-        } else if (isNaN(ax_perda) || ax_perda < 0) {
+        } else if (ax_perda < 0) {
 
             alert("A perda por sujidade precisa ser um número válido.");
 
@@ -61,7 +57,7 @@
 
             alert("Preencha o preço do kWh.");
 
-        } else if (isNaN(ax_preco) || ax_preco <= 0) {
+        } else if (ax_preco <= 0) {
 
             alert("O preço do kWh precisa ser um número maior que zero.");
 
