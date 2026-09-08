@@ -4,9 +4,196 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora final</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="calculadora.css">
 </head>
+
 <body>
-    
+
+<div class="card">
+
+<h2>Simulador de Eficiência Solar</h2>
+
+<label>Quantidade de painéis solares:</label>
+<input type="number" id="qtdPaineis">
+
+<label>Potência de cada painel (Wp):</label>
+<input type="number" id="potenciaPainel">
+
+<label>Região:</label>
+<select id="regiao">
+    <option value="0">Selecione uma opção</option>
+    <option value="norte">Norte</option>
+    <option value="nordeste">Nordeste</option>
+    <option value="centro-oeste">Centro-Oeste</option>
+    <option value="sudeste">Sudeste</option>
+    <option value="sul">Sul</option>
+</select>
+
+<label>Ambiente das instalações:</label>
+<select id="ambiente">
+    <option value="0">Selecione uma opção</option>
+    <option value="rural">Área Rural - Isolada</option>
+    <option value="rodovia">Próximo de Rodovias ou Indústrias</option>
+    <option value="urbanoBaixa">Zona Urbana de Baixa Densidade</option>
+    <option value="urbanoAlta">Zona Urbana de Alta Densidade / Industrial</option>
+</select>
+
+<label>Tempo entre uma limpeza e outra (em meses):</label>
+<input type="number" id="periodoLimpeza" placeholder="Digite 0 se não realiza limpeza">
+
+<button onclick="calcular()">Simular</button>
+
+<p id="mensagem" style="color: red; text-align: center;"></p>
+
+<div id="resultado"></div>
+
+</div>
+
+<script>
+
+function calcular() {
+
+    let paineis = Number(qtdPaineis.value);
+    let potPainel = Number(potenciaPainel.value);
+    let regiaoEscolhida = regiao.value;
+    let ambienteEscolhido = ambiente.value;
+    let mesesLimpeza = Number(periodoLimpeza.value);
+
+    if (paineis <= 0) {
+        mensagem.innerHTML = `Informe uma quantidade válida de painéis solares.`;
+    } else if (potPainel <= 0) {
+        mensagem.innerHTML = `Informe a potência de cada painel (Wp).`;
+    } else if (regiaoEscolhida == "0") {
+        mensagem.innerHTML = `Selecione a região da instalação.`;
+    } else if (ambienteEscolhido == "0") {
+        mensagem.innerHTML = `Selecione o ambiente das instalações.`;
+    } else if (mesesLimpeza < 0) {
+        mensagem.innerHTML = `Informe um período de limpeza válido (ou 0 caso não realize limpeza).`;
+    } else {
+
+        mensagem.innerHTML = ``;
+
+        let irrad = 0;
+        let tarifa = 0;
+        let diasSecos = 0;
+        let tempMedia = 0;
+
+        if (regiaoEscolhida == "norte") {
+            irrad = 4.64;
+            tarifa = 0.71;
+            diasSecos = 70;
+            tempMedia = 27;
+        }
+
+        if (regiaoEscolhida == "nordeste") {
+            irrad = 5.49;
+            tarifa = 0.68;
+            diasSecos = 90;
+            tempMedia = 29;
+        }
+
+        if (regiaoEscolhida == "centro-oeste") {
+            irrad = 5.07;
+            tarifa = 0.73;
+            diasSecos = 90;
+            tempMedia = 28;
+        }
+
+        if (regiaoEscolhida == "sudeste") {
+            irrad = 5.07;
+            tarifa = 0.76;
+            diasSecos = 80;
+            tempMedia = 25;
+        }
+
+        if (regiaoEscolhida == "sul") {
+            irrad = 4.40;
+            tarifa = 0.73;
+            diasSecos = 60;
+            tempMedia = 22;
+        }
+
+        let cSujeira = 0;
+
+        if (ambienteEscolhido == "rural") {
+            cSujeira = 0.2;
+        }
+
+        if (ambienteEscolhido == "rodovia") {
+            cSujeira = 0.5;
+        }
+
+        if (ambienteEscolhido == "urbanoBaixa") {
+            cSujeira = 0.4;
+        }
+
+        if (ambienteEscolhido == "urbanoAlta") {
+            cSujeira = 0.8;
+        }
+
+        let potenciaTotal = paineis * potPainel / 1000;
+
+        let perdaTemp = 0;
+
+        if (tempMedia > 25) {
+            perdaTemp = (tempMedia - 25) * 0.0045;
+        }
+
+        let desempenhoIdeal = 0.9 - perdaTemp;
+
+        let diasSemLimpeza = mesesLimpeza * 30;
+        let diasAcumulados = 0;
+
+        if (mesesLimpeza == 0) {
+            diasAcumulados = diasSecos;
+        } else if (diasSemLimpeza <= diasSecos) {
+            diasAcumulados = diasSemLimpeza;
+        } else {
+            diasAcumulados = diasSecos;
+        }
+
+        let perdaSujeira = diasAcumulados * cSujeira / 100;
+
+        let desempenhoReal = desempenhoIdeal - perdaSujeira;
+
+        let geracaoIdeal = potenciaTotal * irrad * desempenhoIdeal;
+        let geracaoReal = potenciaTotal * irrad * desempenhoReal;
+
+        let perdaPercentual = (geracaoIdeal - geracaoReal) * 100 / geracaoIdeal;
+
+        let prejuizoMensalAtual = (geracaoIdeal - geracaoReal) * tarifa * 30;
+        let prejuizoAnualAtual = prejuizoMensalAtual * 12;
+
+        let perdaComMonitoramento = 0.03;
+        let geracaoComMonitoramento = potenciaTotal * irrad * (desempenhoIdeal - perdaComMonitoramento);
+        let prejuizoMensalComMonitoramento = (geracaoIdeal - geracaoComMonitoramento) * tarifa * 30;
+        let prejuizoAnualComMonitoramento = prejuizoMensalComMonitoramento * 12;
+
+        let economiaAnual = prejuizoAnualAtual - prejuizoAnualComMonitoramento;
+
+        resultado.innerHTML = `
+    Potência total instalada: ${potenciaTotal.toFixed(2)} kWp <br>
+
+    Geração diária ideal: ${geracaoIdeal.toFixed(2)} kWh <br>
+
+    Geração diária real (com sujeira e temperatura): ${geracaoReal.toFixed(2)} kWh <br>
+
+    Perda estimada na geração: ${perdaPercentual.toFixed(0)}% <br><br>
+
+    Prejuízo mensal estimado hoje: R$ ${prejuizoMensalAtual.toFixed(2)} <br>
+
+    Prejuízo anual estimado hoje: R$ ${prejuizoAnualAtual.toFixed(2)} <br><br>
+
+    Prejuízo anual estimado COM monitoramento de luminosidade: R$ ${prejuizoAnualComMonitoramento.toFixed(2)} <br><br>
+
+    <b>Economia potencial ao contratar nosso monitoramento: R$ ${economiaAnual.toFixed(2)} por ano</b> <br><br>
+
+    Sua empresa pode estar deixando esse valor na mesa por falta de monitoramento em tempo real da luminosidade e da limpeza dos painéis.`;
+    }
+
+}
+
+</script>
+
 </body>
 </html>
