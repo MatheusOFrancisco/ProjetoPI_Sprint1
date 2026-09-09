@@ -40,14 +40,15 @@
     <option value="urbanoAlta">Zona Urbana de Alta Densidade / Industrial</option>
 </select>
 
-<label>Tempo entre uma limpeza e outra (em meses):</label>
-<input type="number" id="periodoLimpeza" placeholder="Digite 0 se não realiza limpeza">
+<label>Tempo entre uma limpeza e outra:</label>
+<input placeholder="em meses ou 0 para sem limpeza" type="number" id="periodoLimpeza">
 
 <button onclick="calcular()">Simular</button>
 
-<p id="mensagem" style="color: red; text-align: center;"></p>
 
-<div id="resultado"></div>
+<div id="resultado">
+<p id="mensagem" style="color: red; text-align: center;"></p>
+</div>
 
 </div>
 
