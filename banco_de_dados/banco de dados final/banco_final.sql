@@ -7,8 +7,8 @@ id_empresa INT PRIMARY KEY AUTO_INCREMENT,
 cnpj CHAR(14) UNIQUE NOT NULL,
 nome VARCHAR (50) NOT NULL,
 data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-status_contrato VARCHAR (40),
-CONSTRAINT chk_contrato CHECK(status_contrato IN('Ativo','Inativo'))
+status_contrato TINYINT,
+CONSTRAINT chk_contrato CHECK(status_contrato IN(0,1))
 );
 
 CREATE TABLE usuario (
@@ -17,7 +17,7 @@ nome VARCHAR(50) NOT NULL,
 email VARCHAR (50) NOT NULL,
 telefone VARCHAR (20),
 senha VARCHAR (20) NOT NULL, 
-nivel_permissao INT,
+nivel_permissao TINYINT,
 id_empresa INT NOT NULL,
 CONSTRAINT chk_permissao CHECK(nivel_permissao BETWEEN 1 AND 5)
 );
@@ -25,18 +25,18 @@ CONSTRAINT chk_permissao CHECK(nivel_permissao BETWEEN 1 AND 5)
 CREATE TABLE contrato (
 id_contrato INT PRIMARY KEY AUTO_INCREMENT,
 data_contrato DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
-tipo_contrato  VARCHAR (10) NOT NULL,
+tipo_contrato  TINYINT NOT NULL,
 data_final_contrato DATE NOT NULL,
 id_empresa INT NOT NULL,
 id_usuario INT NOT NULL,
 id_sede INT NOT NULL,
-CONSTRAINT chk_tipo_contrato CHECK(tipo_contrato IN('Mensal','Anual'))
+CONSTRAINT chk_tipo_contrato CHECK(tipo_contrato IN(1,2,3)) -- 1: fixo, 2: manutencao, 3: recorrente
 );
 
 
 CREATE TABLE sensor (
 id_sensor INT PRIMARY KEY AUTO_INCREMENT,
-setor VARCHAR (5) NOT NULL,
+setor TINYINT NOT NULL,
 ip_sensor VARCHAR (32) NOT NULL,
 data_instalacao DATE NOT NULL,
 data_manutencao DATE NOT NULL,
@@ -47,7 +47,7 @@ id_sede INT NOT NULL
 
 CREATE TABLE medicao_sensor(
 id_medicao_sensor INT PRIMARY KEY AUTO_INCREMENT,
-result_medicao DECIMAL(100000,2) NOT NULL,
+result_medicao INT NOT NULL,
 dt_hr_medicao DATETIME NOT NULL,
 id_sensor INT NOT NULL
 );
