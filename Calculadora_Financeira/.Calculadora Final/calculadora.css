@@ -18,6 +18,19 @@ h2 {
     color: #2c3e50;
 }
 
+.titulo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.titulo img {
+    width: 160px;
+    height: 160px;
+    object-fit: contain;
+}
+
 label {
     display: block;
     margin-top: 15px;
@@ -34,7 +47,7 @@ input, select, button {
 
 button {
     margin-top: 20px;
-    background-color: green;
+    background-color: #2B3B92;
     color: white;
     border: none;
     padding: 10px;
