@@ -201,6 +201,9 @@
         let ax_potenciaPorPainel = ax_potencia * ax_irrad
         let ax_perdaSujeira = 0
         let ax_diasSemLimpeza = ax_periodoLimpeza * 30
+        // aplicar redução de desesmpenho em caso de limpeza natural
+        let coefLimpeza = 0.006
+
         if (ax_tempMedia > 25) {
             // perda por temperatura
             ax_desempenhoIdeal = ax_desempenhoIdeal - ((ax_tempMedia - 25) * 0.0045)
@@ -208,18 +211,21 @@
         // perda por sujidade por dia
         if (ax_periodoLimpeza == 0) {
             ax_perdaSujeira = ax_diasSeco * ax_cSujeira
+            coefLimpeza = 0.007
         } else if (ax_diasSemLimpeza <= ax_diasSeco) {
             ax_perdaSujeira = ax_diasSemLimpeza * ax_cSujeira
+            coefLimpeza = 0.005
         } else {
             ax_perdaSujeira = ax_diasSeco * ax_cSujeira
         }
-        ax_desempenhoReal = ax_desempenhoIdeal - (ax_perdaSujeira * 0.01)
+        ax_perdaSujeira = ax_perdaSujeira * coefLimpeza
+        ax_desempenhoReal = ax_desempenhoIdeal - ax_perdaSujeira
         //-Definindo valores para exibição
         //  calcular custo da limpeza anual
         let ax_custoLimpeza = 10
         if (ax_qntPainel > 750) {
             if (ax_qntPainel > 1000) {
-                ax_custoLimpeza = 5
+                ax_custoLimpeza = 6.5
             } else {
                 ax_custoLimpeza = 7.5
             }
