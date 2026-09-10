@@ -27,9 +27,7 @@ void loop() {
   // Exibição dos dados no Monitor Serial
   Serial.print("Leitura Analógica: ");
   Serial.print(valorAnalogico);
-  Serial.print(" | Tensão: ");
-  Serial.print(tensaoGerada, 3);
-  Serial.print(" V | Luminosidade Estimada: ");
+  Serial.print(" | Luminosidade Estimada: ");
   Serial.print(luxEstimado, 1);
   Serial.println(" Lux");
 
