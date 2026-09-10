@@ -61,5 +61,6 @@ id_emrpesa INT NOT NULL,
 id_setor INT NOT NULL,
 potencia_W DECIMAL (7,2)
 );
+
 SHOW TABLES;
 
