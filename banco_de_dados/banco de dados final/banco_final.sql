@@ -1,5 +1,5 @@
-CREATE DATABASE Celarra;
-USE Celarra;
+CREATE DATABASE Cellara;
+USE Cellara;
 
 
 CREATE TABLE empresa (
@@ -10,6 +10,7 @@ data_cadastro DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
 status_contrato TINYINT,
 CONSTRAINT chk_contrato CHECK(status_contrato IN(0,1))
 );
+
 
 CREATE TABLE usuario (
 id_usuario INT PRIMARY KEY AUTO_INCREMENT,
@@ -22,6 +23,7 @@ id_empresa INT NOT NULL,
 CONSTRAINT chk_permissao CHECK(nivel_permissao BETWEEN 1 AND 5)
 );
 
+
 CREATE TABLE contrato (
 id_contrato INT PRIMARY KEY AUTO_INCREMENT,
 data_contrato DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -30,27 +32,30 @@ data_final_contrato DATE NOT NULL,
 id_empresa INT NOT NULL,
 id_usuario INT NOT NULL,
 id_sede INT NOT NULL,
-CONSTRAINT chk_tipo_contrato CHECK(tipo_contrato IN(1,2,3)) -- 1: fixo, 2: manutencao, 3: recorrente
+CONSTRAINT chk_tipo_contrato CHECK(tipo_contrato IN(1, 2, 3)) -- 1: Fixo; 2: Recorrente; 3: Manutenção
 );
+
 
 
 CREATE TABLE sensor (
 id_sensor INT PRIMARY KEY AUTO_INCREMENT,
-setor TINYINT NOT NULL,
+setor varchar(5) NOT NULL,
 ip_sensor VARCHAR (32) NOT NULL,
 data_instalacao DATE NOT NULL,
 data_manutencao DATE NOT NULL,
-status_sensor VARCHAR (10) NOT NULL,
+status_sensor TINYINT NOT NULL,
 id_empresa INT NOT NULL,
-id_sede INT NOT NULL
+id_sede INT NOT NULL,
+CONSTRAINT chk_status_sensor CHECK(status_sensor IN(0,1))
 );
 
 CREATE TABLE medicao_sensor(
 id_medicao_sensor INT PRIMARY KEY AUTO_INCREMENT,
-result_medicao INT NOT NULL,
+result_medicao INT,
 dt_hr_medicao DATETIME NOT NULL,
 id_sensor INT NOT NULL
 );
+
 
 
 CREATE TABLE painel (
@@ -85,13 +90,13 @@ id_sensor INT NOT NULL
 
 
 INSERT INTO empresa (cnpj, nome, status_contrato) VALUES
-('11222333000144', 'Caramicol Alimentos S.A.', 'Ativo'),
-('22333444000155', 'Metalurgica Vale Verde', 'Ativo'),
-('33444555000166', 'Distribuidora Naval do Atlantico', 'Ativo'),
-('44555666000177', 'Refinaria Serra Azul Energia', 'Ativo'),
-('55666777000188', 'Grupo Metalpar Siderurgia', 'Ativo');
+('11222333000144', 'Caramicol Alimentos S.A.', 1),
+('22333444000155', 'Metalurgica Vale Verde', 0),
+('33444555000166', 'Distribuidora Naval do Atlantico', 1),
+('44555666000177', 'Refinaria Serra Azul Energia', 0),
+('55666777000188', 'Grupo Metalpar Siderurgia', 1);
  
-INSERT INTO sede (numero_casa, cep, complemento, qnt_paineis, id_empresa) VALUES
+INSERT INTO sede (numero, cep, complemento, qnt_paineis, id_empresa) VALUES
 ('120', '01310100', 'Galpao 2', 45, 1),
 ('45', '66015000', 'Patio industrial', 30, 2),
 ('300', '66093000', 'Terminal Portuario', 480, 3),
@@ -106,23 +111,23 @@ INSERT INTO usuario (nome, email, telefone, senha, nivel_permissao, id_empresa) 
 ('Elisa Prado', 'elisa@metalpar.com.br', '31966660000', 'hashsenha5', 2, 5);
  
 INSERT INTO contrato (tipo_contrato, data_final_contrato, id_empresa, id_usuario, id_sede) VALUES
-('Anual', '2027-08-01', 1, 1, 1),
-('Mensal', '2026-12-01', 2, 2, 2),
-('Anual', '2028-01-15', 3, 3, 3),
-('Anual', '2027-05-20', 4, 4, 4),
-('Mensal', '2026-11-10', 5, 5, 5);
+(1, '2027-08-01', 1, 1, 1),
+(1, '2026-12-01', 2, 2, 2),
+(2, '2028-01-15', 3, 3, 3),
+(3, '2027-05-20', 4, 4, 4),
+(2, '2026-11-10', 5, 5, 5);
  
 INSERT INTO sensor (setor, ip_sensor, data_instalacao, data_manutencao, status_sensor, id_empresa, id_sede) VALUES
-('A1','192.168.0.10', '2025-02-10', '2026-02-10', 'ativo', 1, 1),
-('A1','192.168.0.11', '2025-02-10', '2026-02-10', 'ativo', 1, 1),
-('B1','192.168.1.10', '2024-11-05', '2025-11-05', 'ativo', 2, 2),
-('B1','192.168.1.11', '2024-11-05', '2025-11-05', 'manutencao', 2, 2),
-('C1','192.168.2.10', '2024-06-01', '2025-06-01', 'ativo', 3, 3),
-('C1','192.168.2.11', '2024-06-01', '2025-06-01', 'ativo', 3, 3),
-('D1','192.168.3.10', '2023-09-15', '2025-09-15', 'ativo', 4, 4),
-('D1','192.168.3.11', '2023-09-15', '2025-09-15', 'manutencao', 4, 4),
-('E1','192.168.4.10', '2025-01-20', '2026-01-20', 'ativo', 5, 5),
-('E1','192.168.4.11', '2025-01-20', '2026-01-20', 'ativo', 5, 5);
+('A1','192.168.0.10', '2025-02-10', '2026-02-10', 1, 1, 1),
+('A1','192.168.0.11', '2025-02-10', '2026-02-10', 1, 1, 1),
+('B1','192.168.1.10', '2024-11-05', '2025-11-05', 1, 2, 2),
+('B1','192.168.1.11', '2024-11-05', '2025-11-05', 0, 2, 2),
+('C1','192.168.2.10', '2024-06-01', '2025-06-01', 1, 3, 3),
+('C1','192.168.2.11', '2024-06-01', '2025-06-01', 1, 3, 3),
+('D1','192.168.3.10', '2023-09-15', '2025-09-15', 1, 4, 4),
+('D1','192.168.3.11', '2023-09-15', '2025-09-15', 0, 4, 4),
+('E1','192.168.4.10', '2025-01-20', '2026-01-20', 1, 5, 5),
+('E1','192.168.4.11', '2025-01-20', '2026-01-20', 1, 5, 5);
  
 INSERT INTO medicao_sensor (result_medicao, dt_hr_medicao, id_sensor) VALUES
 (67877.67, '2026-08-01 12:00:00', 1),
@@ -162,7 +167,7 @@ SELECT * FROM empresa WHERE nome = 'Distribuidora Naval do Atlantico';
 SELECT * FROM sede WHERE id_empresa = 3;
  
 SELECT setor, status_sensor FROM sensor WHERE id_sede = 3;
- 
+
 SELECT * FROM medicao_sensor WHERE id_sensor IN (5, 6);
  
 SELECT
@@ -181,7 +186,7 @@ SELECT nome, status_contrato FROM empresa ORDER BY nome;
  
 SELECT id_empresa, qnt_paineis FROM sede ORDER BY qnt_paineis DESC;
  
-SELECT * FROM sensor WHERE status_sensor = 'manutencao';
+SELECT * FROM sensor WHERE status_sensor = 0;
  
 SELECT * FROM alerta ORDER BY dt_alerta DESC;
  
